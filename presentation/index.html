@@ -173,11 +173,86 @@
             ```
           </script>
         </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## Tasks and Targets 
+
+            1) Tasks: A atomic unit of work. Takes a target(s), produces (targets)
+
+            2) Targets: Python representation of a saved state of data or other information. 
+
+          </script>
+        </script>
+        
+        <section data-markdown>
+          <script type="text/template">
+            ## Our first Task 
+            
+            ```
+            import luigi 
+
+            class MyTask(luigi.Task):
+
+              param = luigi.parameter(default=42)
+
+              def requires(self):
+                ### This is what the task depends on befor it runs. 
+                return SomeOtherTask(self.param)
+
+              def run(self):
+                ### This is the code that is executed. 
+                f = self.output().open('w')
+                print >> f, "hello world from run"
+                f.close()
+
+              def output(self):
+                ### this is the target we are writing to. 
+                return luigi.localTarget('/tmp/foo/bar-%s.txt' % self.param)
+            ```
+          </script>
+        </script>
+        
+        <section data-markdown>
+          <script type="text/template">
+            ## Running it 
+            
+            ### Command Line 
+
+            `luigi --module my_module MyTask --param 42 --local-scheduler`
+
+
+            ### Luigi Daemon 
+            `luigid background`
+            `luigi --module my_module MyTask`
+
+            Check status by visiting `localhost:8082`
+          </script>
+        </script>
+        
+        <section data-markdown>
+          <script type="text/template">
+          ## Let's Build Our Pipeline
+        
+          </script>
+        </section>
+
         <section data-markdown>
           <script type="text/template">
             ## Examples 
             [Docs](http://luigi.readthedocs.com/)
             [OpenEEMeter](https://github.com/openeemeter/etl)
+            [Spotify NYC Data Science Meetup Presenation](http://www.slideshare.net/erikbern/luigi-presentation-nyc-data-science)
+
+          </script>
+        </section>
+
+
+        <section data-markdown>
+          <script type="text/template">
+            ## Thanks for coming!
+
+            Comments, Concerns, Existential Data Crises: Hunter@hunterowens.net or @hunter_owens on the twitters. 
           </script>
         </section>
 			</div>
