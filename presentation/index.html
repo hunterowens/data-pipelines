@@ -54,9 +54,9 @@
 
 						* Organize your workflow 
 
-						* edit and rerun 
+						* Edit and Rerun 
 
-						* collaboration
+						* Collaboration
 
 					</script>
 				</section>
@@ -102,7 +102,84 @@
             [](!https://raw.githubusercontent.com/spotify/luigi/master/doc/luigi.png)
             
 					</script>
-				</section>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## Atomic File Operations  
+            A scripted data pipeline probably looks a bit like this. 
+
+            ```
+            from codebase import generate_features, fit_model, deploy_predictions
+
+            if __name__ == '__main__':
+              generate_features()
+              fit_model()
+              deploy_predictions()
+
+            ```
+          </script>
+        </section>
+        
+        <section data-markdown>
+          <script type="text/template">
+            ## Stuff breaks. 
+
+            **All the time.**
+
+            ```
+            In [1]: fit_model()
+            ---------------------------------------------------------------------------
+            NameError                                 Traceback (most recent call last)
+            <ipython-input-1-1ff42fe6f9be> in <module>()
+            ----> 1 fit_model()
+
+            NameError: name 'fit_model' is not defined
+
+            ```
+          </script>
+        </section>
+
+        
+        <section data-markdown>
+          <script type="text/template">
+            ## Resume at Broken Step 
+            * Failures will happen, in both development and production. 
+
+            * Resuming allows use to make atomic operations, only run code that needs to be rerun 
+
+            * The idea of Atomic File or Database operations allows use to resume from last working step. 
+
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## Atomic File Operations 
+            Now, let's add some atomic file ops. 
+
+            ```
+            from codebase import generate_features, fit_model, deploy_predictions
+            import os 
+
+            if __name__ == '__main__':
+              if not os.path.exists('./data/features.csv'):  
+                generate_features()
+                if not os.path.exists('model.pickle')
+                  fit_model()
+              if predictions.date != datetime.datetime.now():    
+                deploy_predictions()
+
+            ```
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ## Examples 
+            [Docs](http://luigi.readthedocs.com/)
+            [OpenEEMeter](https://github.com/openeemeter/etl)
+          </script>
+        </section>
 			</div>
 
 		</div>
