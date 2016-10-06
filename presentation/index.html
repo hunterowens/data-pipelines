@@ -39,9 +39,9 @@
 
 				<section data-markdown>
 					<script type="text/template">
-						## Luigi and Data Pipelines
+						## Building your first Data Pipelines
 
-						PyData Chicago Workshop 
+						PyData DC Workshop 
 
 						Presenter: @hunter_owens
 
@@ -140,6 +140,19 @@
           </script>
         </section>
 
+        <section data-markdown>
+          <script type="text/template">
+            ## So.... 
+            What happens when this breaks. 
+
+            at 2am. 
+
+            when the model needs to be updated. 
+
+            and we've already run 3 hours of calculations. 
+          </script>
+        </section>
+
         
         <section data-markdown>
           <script type="text/template">
@@ -227,6 +240,11 @@
             `luigid background`
             `luigi --module my_module MyTask`
 
+            ### As a script/inside iPython Notebooks
+            ```
+            if __name__ == '__main__':
+              luigi.run(['MyTaskName', '--local-scheduler'])
+
             Check status by visiting `localhost:8082`
           </script>
         </script>
@@ -234,9 +252,92 @@
 
         <section data-markdown>
           <script type="text/template">
-          ## Let's Build Our Pipeline
+            ## Let's Build Our Pipeline
+
+            Go to 
         
           </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## Examples Data Insert - PSQL  
+            ```
+            class ResultsetToDatabase(luigi.postgres.CopyToTable):
+                date_interval = luigi.DateIntervalParameter()
+
+                host = "localhost"
+                database = "toplists"
+                user = "luigi"
+                password = "abc123"  # ;)
+                table = "test_insert"
+
+                columns = [("date_from", "DATE"),
+                           ("date_to", "DATE"),
+                           ("artist", "TEXT"),
+                           ("streams", "INT")]
+
+                def requires(self):
+                    return SomeOtherJob()
+              ```
+            </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## Examples Data Query - PSQL  
+            ```
+            class ResultsetToDatabase(luigi.postgres.CopyToTable):
+                date_interval = luigi.DateIntervalParameter()
+
+                host = "localhost"
+                database = "toplists"
+                user = "luigi"
+                password = "abc123"  # ;)
+                table = "test_insert"
+
+                columns = [("date_from", "DATE"),
+                           ("date_to", "DATE"),
+                           ("artist", "TEXT"),
+                           ("streams", "INT")]
+
+                def requires(self):
+                    return SomeOtherJob()
+              ```
+            </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ## Batch Data Job - Spark 
+            ```
+            class PySparkWordCount(SparkSubmitTask):
+                """
+                Submits a Word Count Job to spark, using s3. Fancy, right?
+
+                Example luigi configuration::
+                    [spark]
+                    spark-submit: /usr/local/spark/bin/spark-submit
+                    master: spark://spark.example.org:7077
+                    deploy-mode: client
+                """
+                driver_memory = '2g'
+                executor_memory = '3g'
+                total_executor_cores = luigi.IntParameter(default=100, significant=False)
+
+                name = "PySpark Word Count"
+                app = 'wordcount.py'
+
+                def app_options(self):
+                    # These are passed to the Spark main args in the defined order.
+                    return [self.input().path, self.output().path]
+
+                def input(self):
+                    return S3Target("s3n://bucket.example.org/wordcount.input")
+
+                def output(self):
+                return S3Target('s3n://bucket.example.org/wordcount.output')
+            ```
+            </script>
         </section>
 
         <section data-markdown>
