@@ -252,6 +252,44 @@
 
         <section data-markdown>
           <script type="text/template">
+            ## Pandas Integration  
+            (*or really any other pickle-able object*)
+            ```
+            import luigi 
+            import pandas as pd
+
+            class OutputDF(luigi.ExternalTask):
+
+              def run(self):
+                df = pd.DataFrame()
+                # get the file 
+                f = self.output().open('w')
+                # send the pickle to the target
+                pickle = df.to_pickle(f)
+                # close us out 
+                f.close()
+
+              def output(self):
+                ### this is the target we are writing to. 
+                return luigi.localTarget('/tmp/df.pickle')
+
+            class readDf(luigi.task):
+
+              def requires(self):
+                return OutputDF()
+
+              def run(self)
+                df = pickle.load(self.input().open('r'))
+
+              def output(self):
+
+            ```
+          </script>
+        </script>
+        </section>
+        
+        <section data-markdown>
+          <script type="text/template">
             ## Let's Build Our Pipeline
 
             Go to 
