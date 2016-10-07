@@ -20,7 +20,7 @@ class DownloadTask(luigi.ExternalTask):
         pass
 
     def output(self):
-        pass
+        return luigi.LocalTarget('./data/permits-dc-%s.csv' % str(self.year))
 
 
 class cleanCSV(luigi.Task):
