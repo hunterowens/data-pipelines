@@ -216,7 +216,7 @@
               def run(self):
                 ### This is the code that is executed. 
                 f = self.output().open('w')
-                print >> f, "hello world from run"
+                f.write("hello world from run")
                 f.close()
 
               def output(self):
