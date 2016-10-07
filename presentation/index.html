@@ -240,12 +240,12 @@
             `luigid background`
             `luigi --module my_module MyTask`
 
-            ### As a script/inside iPython Notebooks
+            ### As a script/inside Juypter Notebooks
             ```
             if __name__ == '__main__':
               luigi.run(['MyTaskName', '--local-scheduler'])
-
-            Check status by visiting `localhost:8082`
+            ```
+            Check status by visiting `localhost:8082` if running the daemon
           </script>
         </script>
         </section>
@@ -292,23 +292,18 @@
           <script type="text/template">
             ## Let's Build Our Pipeline
 
-            Go to 
+            Go to bit.ly/ 
         
           </script>
         </section>
 
         <section data-markdown>
           <script type="text/template">
-            ## Examples Data Insert - PSQL  
-            ```
+            ## Example Data Insert - PSQL  
+            ```python
+
             class ResultsetToDatabase(luigi.postgres.CopyToTable):
                 date_interval = luigi.DateIntervalParameter()
-
-                host = "localhost"
-                database = "toplists"
-                user = "luigi"
-                password = "abc123"  # ;)
-                table = "test_insert"
 
                 columns = [("date_from", "DATE"),
                            ("date_to", "DATE"),
@@ -323,16 +318,10 @@
 
         <section data-markdown>
           <script type="text/template">
-            ## Examples Data Query - PSQL  
+            ## Example Data Query - PSQL  
             ```
             class ResultsetToDatabase(luigi.postgres.CopyToTable):
                 date_interval = luigi.DateIntervalParameter()
-
-                host = "localhost"
-                database = "toplists"
-                user = "luigi"
-                password = "abc123"  # ;)
-                table = "test_insert"
 
                 columns = [("date_from", "DATE"),
                            ("date_to", "DATE"),
