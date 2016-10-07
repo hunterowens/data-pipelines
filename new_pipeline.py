@@ -119,6 +119,14 @@ class makePredictions(luigi.Task):
         return computeWards()
 
     def run(self):
+        ## Here's the basic skeleton of how do do a linear regression
+        from sklearn.linear_model import LinearRegression
+        data = np.asarray(df)
+        lr = LinearRegression()
+        X, y = data[:, 1], data[:, 0] ## THIS DEPENDS ON HOW YOU SHAPE YOUR DATA - X should be years, y should be counts
+        lr.fit(X, y)
+        lr.predict(2017)
+
         pass
 
     def output(self):
@@ -139,5 +147,4 @@ class makeReport(luigi.Task):
         pass
 
 if __name__ == '__main__':
-    luigi.run(['DownloadTask', '--local-scheduler']
-              )
+    luigi.run(['DownloadTask', '--local-scheduler'])
