@@ -34,9 +34,17 @@
 
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
+				<section data-markdown>
+					<script type="text/template">
+            ## Installation 
 
-				
+            * Make sure you have luigi, folium, pandas as scikit-learn installed. 
 
+            * `pip install luigi`
+            * `pip install folium`
+
+					</script>
+				</section>
 				<section data-markdown>
 					<script type="text/template">
 						## Building your first Data Pipelines
@@ -221,12 +229,25 @@
 
               def output(self):
                 ### this is the target we are writing to. 
-                return luigi.localTarget('/tmp/foo/bar-%s.txt' % self.param)
+                return luigi.LocalTarget('/tmp/foo/bar-%s.txt' % self.param)
             ```
           </script>
         </script>
         </section>
         
+        <section data-markdown>
+          <script type="text/template">
+            ## Target Types 
+            * LocalTarget
+            * S3
+            * PostgresTable
+            * HDFS File
+            * BigQuery
+            * And more! 
+
+          </script>
+        </script>
+        </section>
         <section data-markdown>
           <script type="text/template">
             ## Running it 
@@ -240,12 +261,13 @@
             `luigid background`
             `luigi --module my_module MyTask`
 
+            Check status by visiting `localhost:8082` if running the daemon
+            
             ### As a script/inside Juypter Notebooks
             ```
             if __name__ == '__main__':
               luigi.run(['MyTaskName', '--local-scheduler'])
             ```
-            Check status by visiting `localhost:8082` if running the daemon
           </script>
         </script>
         </section>
@@ -292,7 +314,9 @@
           <script type="text/template">
             ## Let's Build Our Pipeline
 
-            Go to http://bit.ly/pydata-dc-pipelines, clone the repo- look for the `dc-pipeline.py` file. 
+             * Go to http://bit.ly/pydata-dc-pipelines 
+             * clone the repo 
+             * look for the `dc-pipeline.py` file. 
         
           </script>
         </section>
@@ -300,6 +324,8 @@
         <section data-markdown>
           <script type="text/template">
             ## Example Data Insert - PSQL  
+
+
             ```python
 
             class ResultsetToDatabase(luigi.postgres.CopyToTable):
@@ -312,15 +338,17 @@
 
                 def requires(self):
                     return SomeOtherJob()
-              ```
+            ```
             </script>
         </section>
 
         <section data-markdown>
           <script type="text/template">
-            ## Example Data Query - PSQL  
-            ```
-            class ResultsetToDatabase(luigi.postgres.CopyToTable):
+            ## Example Data Query - PSQL
+
+            ```python
+
+            class ResultsetToDatabase(luigi.postgres.Query):
                 date_interval = luigi.DateIntervalParameter()
 
                 columns = [("date_from", "DATE"),
@@ -328,10 +356,12 @@
                            ("artist", "TEXT"),
                            ("streams", "INT")]
 
+                query = "SELECT * FROM table_name WHERE artist = 'The Postal Service'"
+
                 def requires(self):
-                    return SomeOtherJob()
+                return SomeOtherJob()
               ```
-            </script>
+          </script>
         </section>
         <section data-markdown>
           <script type="text/template">
@@ -366,13 +396,32 @@
             ```
             </script>
         </section>
+        
+        <section data-markdown>
+          <script type="text/template">
+            ## Confiugration 
+            * Allows you choose luigi server
+            * store secrets
+            * etc
+
+            ```
+            [hadoop]
+            version=cdh4
+            streaming-jar=/usr/lib/hadoop-xyz/hadoop-streaming-xyz-123.jar
+
+            [core]
+            default-scheduler-host=luigi-host.mycompany.foo
+            error-email=foo@bar.baz
+            ```
+          </script>
+        </section>
 
         <section data-markdown>
           <script type="text/template">
             ## Examples 
-            [Docs](http://luigi.readthedocs.com/)
-            [OpenEEMeter](https://github.com/openeemeter/etl)
-            [Spotify NYC Data Science Meetup Presenation](http://www.slideshare.net/erikbern/luigi-presentation-nyc-data-science)
+            * [Docs](http://luigi.readthedocs.com/)
+            * [OpenEEMeter](https://github.com/openeemeter/etl)
+            * [Spotify NYC Data Science Meetup Presenation](http://www.slideshare.net/erikbern/luigi-presentation-nyc-data-science)
 
           </script>
         </section>
