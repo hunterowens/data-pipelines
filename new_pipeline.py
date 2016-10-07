@@ -44,7 +44,7 @@ class mergeDatasets(luigi.Task):
     merges the datasets
     """
     def requires(self):
-        return [cleanCSV(param=year) for year in range(2012,2017)]
+        return [cleanCSV(year) for year in range(2012,2017)]
 
     def run(self):
         pass
