@@ -1,4 +1,7 @@
-import pandas as pd 
+import pandas as pd
+import requests
+import folium
+import luigi
 
 YEARS = {2012: 'http://opendata.dc.gov/datasets/5f4ea2f25c9a45b29e15e53072126739_7.csv',
          2013: 'http://opendata.dc.gov/datasets/4911fcf3527246ae9bf81b5553a48c4d_6.csv',
@@ -10,8 +13,8 @@ class DownloadTask(luigi.ExternalTask):
     """
     downloads data from the portal.
     """
-
-    url = luigi.Parameter()
+    
+    year = luigi.IntParameter(default=2012)
 
     def run(self):
         pass
@@ -22,10 +25,12 @@ class DownloadTask(luigi.ExternalTask):
 
 class cleanCSV(luigi.Task):
     """
-    cleans a CSV into the format we'd like for analysis. 
+    cleans a CSV into the format we'd like for analysis.
+
+    you'll want to grab the Ward, Fees, Permit, and Geospacial fees. 
     """
     def requires(self):
-        pass
+        return DownloadTask(self.param)
 
     def run(self):
         pass
@@ -39,7 +44,7 @@ class mergeDatasets(luigi.Task):
     merges the datasets
     """
     def requires(self):
-        pass
+        return [cleanCSV(param=year) for year in range(2012,2017)]
 
     def run(self):
         pass
@@ -52,7 +57,7 @@ class importIntoPandasDF(luigi.Task):
     converts the CSVs into pandas dataframes, saves as pickle file. 
     """
     def requires(self):
-        pass
+        return mergeDatasets
 
     def run(self):
         pass
@@ -63,10 +68,14 @@ class importIntoPandasDF(luigi.Task):
 class computeWards(luigi.Task):
     """
     compute the development by ward per year and save. 
+
+    Basically, you'll want to value_counts() on the ward field.
+
+    How many permits per ward were issued
     """
     
     def requires(self):
-        pass
+        return importIntoPandasDF()
 
     def run(self):
         pass
@@ -80,19 +89,34 @@ class makeMap(luigi.Task):
     """
     
     def requires(self):
-        pass
+        return importIntoPandasDF()
 
     def run(self):
+        """
+        We're gonna use Folium to make a map. 
+        I'm giving you some basic code here to get a map object and show you 
+        how to plot a marker. 
+        """
+        # make a map
+        map= folium.Map(location=[38.9072, -77.0369],
+                           zoom_start=12)
+        # add a marker
+        folium.Marker([45.3288, -121.6625], popup='Mt. Hood Meadows').add_to(map)
         pass
 
     def output(self):
         pass
 
-class MakePredictions(luigi.Task):
-    """Make predictions for given"""
+class makePredictions(luigi.Task):
+    """
+    Make predictions for given next years number of ward development, 
+    Given the ward sums, predict the values using a simple regression.
+
+    NB: This is not good modeling, but I'm trying to demostrate plumbing here. 
+    """
 
     def requires(self):
-        pass
+        return computeWards()
 
     def run(self):
         pass
@@ -106,7 +130,7 @@ class makeReport(luigi.Task):
     """
 
     def requires(self):
-        pass
+        return makePredictions(), makeMap() 
 
     def run(self):
         pass
@@ -115,5 +139,5 @@ class makeReport(luigi.Task):
         pass
 
 if __name__ == '__main__':
-    luigi.run(['task_name', '--local-scheduler']
+    luigi.run(['DownloadTask', '--local-scheduler']
               )
